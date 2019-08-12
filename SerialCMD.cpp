@@ -104,9 +104,17 @@ bool SerialCMD::testTime(char *string, byte *hour, byte *minutes, byte *seconds)
     return(value);
 }
 
+bool SerialCMD::testString(const char *string, uint8_t max_length){
+	if(strlen(string) > max_length){
+      printf(F("ERROR: Parameter out range. Must be less than %d characters.\r\n"), max_length);
+      return(false);
+    }
+	return(true);
+}
+
 //*********************************************************************************************************
 
-bool SerialCMD::addCommand(program_t program, const __FlashStringHelper *string, const __FlashStringHelper *help_string){
+bool SerialCMD::addCommand(program_t program, const __FlashStringHelper *string, const __FlashStringHelper *help_string){  
 	unsigned char i;
 	if(strlen_P((PGM_P)string) > CMD_MAX_COMMANDS_LENGHT){
 		println(F("ERROR: Command too long."));
@@ -153,7 +161,7 @@ void SerialCMD::print(const char * string){
 }
 
 void SerialCMD::print(const __FlashStringHelper *string){
-	print_pm((const PROGMEM byte *)string);
+	print_pm((const PROGMEM char *)string);
 }
 
 void SerialCMD::println(void){
@@ -166,7 +174,7 @@ void SerialCMD::println(const char * string){
 }
 
 void SerialCMD::println(const __FlashStringHelper *string){
-	print_pm((const PROGMEM byte *)string);
+	print_pm((const PROGMEM char *)string);
 	print(F("\r\n"));
 }
 

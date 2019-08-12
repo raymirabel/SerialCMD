@@ -22,12 +22,16 @@
 #define CMD_ASCII_CR			0x0D
 
 typedef void (*pfWelcome) (void);
+#if defined(ESP8266)
+typedef int32_t (*program_t) (int32_t, char **);
+#else
 typedef bool (*program_t) (int, char **);
+#endif
 
 struct command_entry {
-	program_t program;
-	const __FlashStringHelper *command_string;
-	const __FlashStringHelper *help_string;
+  program_t program;
+  const __FlashStringHelper *command_string;
+  const __FlashStringHelper *help_string;
 };
 
 class SerialCMD{
@@ -35,7 +39,7 @@ class SerialCMD{
 public:
 	SerialCMD();
 	void begin(Stream &mySerial, const __FlashStringHelper *prompt, pfWelcome welcome);
-	bool addCommand(program_t program, const __FlashStringHelper *string, const __FlashStringHelper *help_string);
+    bool addCommand(program_t program, const __FlashStringHelper *string, const __FlashStringHelper *help_string);
 	void unregister_all(void);
 	void task(void);
 	void printCommands(void);	
@@ -50,9 +54,9 @@ public:
 	bool testBoolean(const char *string, bool *value);
     bool testDate(char *string, byte *day, byte *month, int *year);
     bool testTime(char *string, byte *hour, byte *minutes, byte *seconds);
+	bool testString(const char *string, uint8_t max_length);
 	
 private:
-
 	struct command_entry list[CMD_MAX_COMMANDS];
 	char * argv_list[CMD_MAX_COMMANDS_ARGS];
 	char shellbuf[CMD_MAX_INPUT_LENGHT];
